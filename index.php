@@ -46,10 +46,13 @@
                     <button type="submit" name="login" class="btn-signin">Sign In</button>
 
                 </form>
-                <a class="create-account" href="register.php">Create Account</a>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 12px;">
+                    <p>New to Volcord?</p>
+                    <a class="create-account" href="register.php">Create Account</a>
+                </div>
             </div>
         </div>
-        
+
     </div>
 
 </body>

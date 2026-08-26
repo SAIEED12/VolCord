@@ -305,9 +305,9 @@ body {
 }
 
 .create-account{
-    padding-left: 310px; 
-    margin-top: 10px; 
-    display: block;
+    margin-left: 6px;
+    color: var(--navy);
+    font-weight: 600;
 }
 
 .brand-mark {
