@@ -77,11 +77,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $_SESSION["volunteer_name"]  = $full_name;
                 $_SESSION["volunteer_email"] = $email;
                 $_SESSION["volunteer_id"]    = $conn->insert_id;
+                $_SESSION["user_role"]       = $role;
 
                 setcookie("volunteer_name",  $full_name, time() + 3600, "/");
                 setcookie("volunteer_email", $email,     time() + 3600, "/");
+                setcookie("user_role",       $role,      time() + 3600, "/");
 
-                header("Location: dashboard.php");
+                if (strtolower($role) === "customer") {
+                    header("Location: customerDashboard.php");
+                } else {
+                    header("Location: volunteerDashboard.php");
+                }
                 exit;
             }
 
@@ -185,7 +191,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     </div>
 
                     <button type="submit" class="btn-primary">Create Account</button>
-                    <a href="index.php" class="btn-secondary">Already have an account? Sign In</a>
+                    <a href="login.php" class="btn-secondary">Already have an account? Sign In</a>
 
                 </form>
 

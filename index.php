@@ -4,56 +4,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VolCoord | Sign In</title>
+
+    <title>VolCoord | Volunteer Coordination Management System</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="login-page">
+<body class="home-page">
 
-    <div class="login-shell">
+    <!-- Navigation -->
+    <header class="home-header">
 
-        <div class="login-hero">
-            <div class="login-hero-tint"></div>
-            <div class="brand-mark">
-                <span class="brand-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="8" r="4" fill="#fff" />
-                        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#fff" stroke-width="2" stroke-linecap="round" />
-                        <path d="M18 4l1.4 1.4L22 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </span>
-                <span class="brand-word">VOLCORD</span>
-            </div>
+        <div class="home-brand">
+            <div class="home-brand-icon">♟</div>
+            <span>VOLCORD</span>
         </div>
 
-        <div class="login-form-side">
-            <div class="login-form-inner">
-                <p style="font-weight: 600; color: #333;">Welcome to Volcord!</p>
-                <h1 class="login-title">Sign in to your account</h1>
+        <nav class="home-nav">
+            <a href="#about">About</a>
+            <a href="#features">Features</a>
+            <a href="login.php" class="nav-signin">Sign In</a>
+            <a href="register.php" class="nav-register">Create Account</a>
+        </nav>
 
-                <form action="login_submit.php" method="POST">
+    </header>
 
-                    <div class="field">
-                        <label for="email">Email address</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
 
-                    <div class="field">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" required>
-                    </div>
+    <!-- Hero Section -->
+    <section class="home-hero">
 
-                    <button type="submit" name="login" class="btn-signin">Sign In</button>
+        <div class="home-hero-overlay"></div>
 
-                </form>
-                <div style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 12px;">
-                    <p>New to Volcord?</p>
-                    <a class="create-account" href="register.php">Create Account</a>
-                </div>
+        <div class="home-hero-content">
+
+            <p class="home-label">VOLUNTEER COORDINATION MANAGEMENT SYSTEM</p>
+
+            <h1>
+                Connect People.<br>
+                Coordinate Volunteers.<br>
+                <span>Make an Impact.</span>
+            </h1>
+
+            <p class="home-description">
+                VolCoord makes it easier to organize volunteers, manage
+                activities, and connect people with meaningful opportunities
+                to serve their community.
+            </p>
+
+            <div class="home-buttons">
+                <a href="register.php" class="home-btn-primary">
+                    Get Started
+                </a>
+
+                <a href="login.php" class="home-btn-secondary">
+                    Sign In
+                </a>
             </div>
+
         </div>
 
-    </div>
+    </section>
+
+
+    <!-- About Section -->
+    <section class="home-section" id="about">
+
+        <div class="home-section-heading">
+            <p>ABOUT VOLCORD</p>
+            <h2>Volunteer management made simple</h2>
+        </div>
+
+        <div class="about-content">
+
+            <div class="about-text">
+                <p>
+                    VolCoord is designed to simplify the way organizations
+                    manage and coordinate their volunteers.
+                </p>
+
+                <p>
+                    Instead of relying on scattered information and
+                    complicated processes, volunteers can create accounts,
+                    provide their skills, and connect with opportunities
+                    through one centralized system.
+                </p>
+
+                <a href="register.php" class="text-link">
+                    Join VolCoord →
+                </a>
+            </div>
+
+            <div class="about-card">
+                <div class="about-card-icon">✓</div>
+                <h3>One Organized Platform</h3>
+                <p>
+                    Keep volunteer information organized and make
+                    coordination easier for everyone.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Features -->
+    <section class="home-features" id="features">
+
+        <div class="home-section-heading">
+            <p>WHAT VOLCORD OFFERS</p>
+            <h2>Everything you need to coordinate volunteers</h2>
+        </div>
+
+        <div class="feature-grid">
+
+            <div class="feature-card">
+                <div class="feature-icon">01</div>
+                <h3>Volunteer Registration</h3>
+                <p>
+                    Volunteers can create an account and provide their
+                    personal information and relevant skills.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">02</div>
+                <h3>Volunteer Profiles</h3>
+                <p>
+                    Store important volunteer information in an organized
+                    and accessible profile.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">03</div>
+                <h3>Easy Coordination</h3>
+                <p>
+                    Make it easier for organizations and volunteers to
+                    connect and work together.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Call To Action -->
+    <section class="home-cta">
+
+        <div>
+            <p>READY TO GET STARTED?</p>
+
+            <h2>
+                Join the VolCoord community.
+            </h2>
+
+            <span>
+                Create your account and become part of a coordinated
+                volunteer network.
+            </span>
+        </div>
+
+        <a href="register.php" class="home-cta-button">
+            Create Account
+        </a>
+
+    </section>
+
+
+    <!-- Footer -->
+    <footer class="home-footer">
+
+        <div>
+            <strong>VOLCORD</strong>
+            <span>Volunteer Coordination Management System</span>
+        </div>
+
+        <p>
+            © 2026 VolCoord. All rights reserved.
+        </p>
+
+    </footer>
 
 </body>
 

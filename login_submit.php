@@ -13,7 +13,7 @@ if (isset($_POST["login"])) {
     if ($email === "" || $password === "") {
         $error = "All fields are required.";
     } else {
-        $stmt = $conn->prepare("SELECT id, full_name, email, password_hash FROM users WHERE email = ?");
+        $stmt = $conn->prepare("SELECT id, full_name, email, password_hash, role FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $stmt->store_result();
@@ -22,7 +22,7 @@ if (isset($_POST["login"])) {
             $error = "No account found with that email.";
             $stmt->close();
         } else {
-            $stmt->bind_result($user_id, $full_name, $user_email, $password_hash);
+            $stmt->bind_result($user_id, $full_name, $user_email, $password_hash, $user_role);
             $stmt->fetch();
             $stmt->close();
 
@@ -34,21 +34,30 @@ if (isset($_POST["login"])) {
 
     if ($error !== "") {
         $_SESSION["flash_error"] = $error;
-        header("Location: index.php");
+        header("Location: login.php");
         exit();
     }
 
     $_SESSION["volunteer_name"]  = $full_name;
     $_SESSION["volunteer_email"] = $user_email;
     $_SESSION["volunteer_id"]    = $user_id;
+    $_SESSION["user_role"]       = $user_role;
 
     setcookie("volunteer_name",  $full_name, time() + 3600, "/");
     setcookie("volunteer_email", $user_email, time() + 3600, "/");
+    setcookie("user_role",       $user_role, time() + 3600, "/");
 
-    header("Location: dashboard.php");
+    $role_target = strtolower($user_role);
+    if ($role_target === "customer") {
+        header("Location: customerDashboard.php");
+    } elseif ($role_target === "admin") {
+        header("Location: adminDashboard.php");
+    } else {
+        header("Location: volunteerDashboard.php");
+    }
     exit();
 
 } else {
-    header("Location: index.php");
+    header("Location: login.php");
     exit();
 }

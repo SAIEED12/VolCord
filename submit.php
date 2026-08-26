@@ -69,6 +69,7 @@ if (isset($_POST["submit"])) {
     $_SESSION["volunteer_blood_group"] = $blood_group;
     $_SESSION["volunteer_designation"] = $designation;
     $_SESSION["volunteer_address"]     = $address;
+    $_SESSION["user_role"]             = "Volunteer";
 
     // ----- Cookies -----
     // NOTE: this small demo has no database, so the cookies below double as
@@ -82,7 +83,7 @@ if (isset($_POST["submit"])) {
     setcookie("volunteer_id", $contract, $cookie_expiry, "/");
     setcookie("volunteer_pass", password_hash($password, PASSWORD_DEFAULT), $cookie_expiry, "/");
 
-    header("Location: dashboard.php");
+    header("Location: volunteerDashboard.php");
     exit();
 
 } else {
