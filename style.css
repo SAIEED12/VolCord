@@ -1,8 +1,4 @@
 :root {
-    --dark-teal: #1f7a5c;
-    --teal: #3f9483;
-    --deep-teal: #2f7566;
-    --panel-teal: #4a9a89;
     --bg-grey: #ececec;
     --text-dark: #16241f;
     --danger: #b3261e;
@@ -23,7 +19,7 @@ body {
 }
 
 .header {
-    background: linear-gradient(135deg, var(--dark-teal), #2ba37f);
+    background: linear-gradient(135deg, var(--navy), #034a7d);
     color: #fff;
     padding: 28px 40px;
     border-radius: 0 0 14px 14px;
@@ -38,7 +34,7 @@ body {
 }
 
 .page-wrap {
-    background: var(--bg-grey);
+    background: var(--cream);
     margin: 0 18px 18px 18px;
     border-radius: 14px;
     padding: 36px 20px 50px 20px;
@@ -81,11 +77,12 @@ body {
 
 /* ---------- Register page ---------- */
 .card-outer {
-    background: linear-gradient(135deg, var(--teal), var(--deep-teal));
-    border-radius: 18px;
-    padding: 26px;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
-    max-width: 1040px;
+    background: #fff;
+    border: 1px solid #d7d3ca;
+    border-radius: 14px;
+    padding: 0;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+    max-width: 620px;
     margin: 0 auto;
     display: flex;
     gap: 26px;
@@ -93,11 +90,9 @@ body {
 }
 
 .form-panel {
-    background: var(--panel-teal);
-    border-radius: 14px;
+    background: transparent;
     padding: 26px 30px;
     flex: 1 1 380px;
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12) inset;
 }
 
 .field {
@@ -115,10 +110,12 @@ body {
 .field input[type="email"],
 .field input[type="password"],
 .field input[type="date"],
-.field select {
+.field input[type="tel"],
+.field select,
+.field textarea {
     width: 100%;
     padding: 9px 10px;
-    border: none;
+    border: 1px solid #d7d3ca;
     border-radius: 5px;
     font-size: 0.92rem;
     font-family: inherit;
@@ -127,7 +124,7 @@ body {
 
 .field input:focus,
 .field select:focus {
-    outline: 2px solid var(--dark-teal);
+    outline: 2px solid var(--navy);
 }
 
 .radio-group {
@@ -145,10 +142,10 @@ body {
 
 .btn-primary {
     width: 100%;
-    background: #fff;
-    color: var(--text-dark);
+    background: var(--navy);
+    color: #fff;
     border: none;
-    border-radius: 30px;
+    border-radius: 8px;
     padding: 12px;
     font-size: 1rem;
     font-weight: 700;
@@ -158,15 +155,15 @@ body {
 }
 
 .btn-primary:hover {
-    background: #f1f1f1;
+    background: #16304d;
 }
 
 .btn-secondary {
     width: 100%;
-    background: #6fa79b;
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 30px;
+    background: #fff;
+    color: var(--navy);
+    border: 1px solid var(--navy);
+    border-radius: 8px;
     padding: 12px;
     font-size: 1rem;
     font-weight: 700;
@@ -178,7 +175,7 @@ body {
 }
 
 .btn-secondary:hover {
-    background: #5e9689;
+    background: #eef3f8;
 }
 
 /* ---------- Login page ---------- */
@@ -245,23 +242,25 @@ body {
 
 /* ---------- Dashboard ---------- */
 .dash-card {
-    background: var(--panel-teal);
+    background: #fff;
+    border: 1px solid #d7d3ca;
     border-radius: 14px;
     padding: 26px 30px;
     max-width: 640px;
     margin: 0 auto 22px auto;
-    color: #fff;
+    color: var(--text-dark);
 }
 
 .dash-card h2 {
     margin-top: 0;
+    color: var(--navy);
 }
 
 .dash-row {
     display: flex;
     justify-content: space-between;
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e1d8;
     font-size: 0.95rem;
 }
 

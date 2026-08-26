@@ -1,0 +1,15 @@
+CREATE DATABASE IF NOT EXISTS volcord;
+USE volcord;
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'volunteer',
+    skills TEXT NULL,
+    phone VARCHAR(20) NOT NULL,
+    gender VARCHAR(10) NOT NULL,
+    address TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

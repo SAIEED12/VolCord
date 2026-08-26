@@ -1,19 +1,86 @@
 <?php
-session_start();
+require_once "config.php";
 
-$flash_error = "";
-if (isset($_SESSION["flash_error"])) {
-    $flash_error = $_SESSION["flash_error"];
-    unset($_SESSION["flash_error"]);
-}
+$message = "";
+$messageType = ""; 
 
-// Preserve previously entered values if validation failed on submit.
-$old = isset($_SESSION["flash_old"]) ? $_SESSION["flash_old"] : [];
-unset($_SESSION["flash_old"]);
+// If the form was submitted, validate and save it
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $full_name = trim($_POST["full_name"] ?? "");
+    $email     = trim($_POST["email"] ?? "");
+    $password  = $_POST["password"] ?? "";
+    $confirm   = $_POST["confirm_password"] ?? "";
+    $role      = $_POST["role"] ?? "";
+    $skills    = null;
+    $phone     = trim($_POST["phone"] ?? "");
+    $gender    = trim($_POST["gender"] ?? "");
+    $address   = trim($_POST["address"] ?? "");
 
-function old($key, $old)
-{
-    return isset($old[$key]) ? htmlspecialchars($old[$key]) : "";
+    $allowed_roles   = ["Volunteer", "Customer"];
+    $allowed_genders = ["Male", "Female", "Other"];
+
+    if ($full_name === "" || $email === "" || $password === "" || $confirm === "" || $role === ""
+        || $phone === "" || $gender === "" || $address === "") {
+        $message = "All fields are required.";
+        $messageType = "error";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $message = "Please enter a valid email address.";
+        $messageType = "error";
+    } elseif ($password !== $confirm) {
+        $message = "Passwords do not match.";
+        $messageType = "error";
+    } elseif (strlen($password) < 8) {
+        $message = "Password must be at least 8 characters.";
+        $messageType = "error";
+    } elseif (!in_array($role, $allowed_roles, true)) {
+        $message = "Please select a valid role.";
+        $messageType = "error";
+    } elseif (!in_array($gender, $allowed_genders, true)) {
+        $message = "Please select a valid gender.";
+        $messageType = "error";
+    } else {
+
+        if ($role === "Volunteer") {
+            $skills = trim($_POST["skills"] ?? "");
+            if ($skills === "") {
+                $message = "Please list your skills.";
+                $messageType = "error";
+            }
+        }
+    }
+
+    if ($messageType !== "error") {
+
+        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            $message = "An account with that email already exists.";
+            $messageType = "error";
+            $stmt->close();
+        } else {
+            $stmt->close();
+
+            $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+            $stmt = $conn->prepare(
+                "INSERT INTO users (full_name, email, password_hash, role, skills, phone, gender, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+            );
+            $stmt->bind_param("ssssssss", $full_name, $email, $password_hash, $role, $skills, $phone, $gender, $address);
+
+            if ($stmt->execute()) {
+                $stmt->close();
+                header("Location: dashboard.php");
+                exit;
+            }
+
+            $message = "Something went wrong. Please try again.";
+            $messageType = "error";
+            $stmt->close();
+        }
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -21,151 +88,117 @@ function old($key, $old)
 
 <head>
     <meta charset="UTF-8">
-    <title>VolCord | Create Account</title>
-    <link rel="stylesheet" href="assets/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VolCoord | Create Account</title>
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 
 <body>
 
     <div class="header">
-        <h1>VolCord</h1>
+        <h1>VolCoord</h1>
     </div>
 
     <div class="page-wrap">
 
         <h2 class="page-title">Create Account</h2>
-        <p class="page-subtitle">Join our volunteer community</p>
+        <p class="page-subtitle">Volunteer Coordination Management System</p>
 
-        <?php if ($flash_error): ?>
-            <div class="flash-error"><?php echo htmlspecialchars($flash_error); ?></div>
+        <?php if ($message): ?>
+            <div class="<?= $messageType === "success" ? "flash-success" : "flash-error" ?>">
+                <?= htmlspecialchars($message) ?>
+            </div>
         <?php endif; ?>
 
-        <form action="submit.php" method="POST">
+        <div class="card-outer">
+            <div class="form-panel">
 
-            <div class="card-outer">
-
-                <!-- Left panel -->
-                <div class="form-panel">
+                <form method="POST">
 
                     <div class="field">
-                        <label for="first_name">First Name</label>
-                        <input type="text" id="first_name" name="first_name" placeholder="Enter first name"
-                            value="<?php echo old('first_name', $old); ?>" required>
+                        <label for="full_name">Full Name</label>
+                        <input type="text" id="full_name" name="full_name"
+                               value="<?= htmlspecialchars($_POST['full_name'] ?? '') ?>" required>
                     </div>
 
                     <div class="field">
-                        <label for="nick_name">Nick Name</label>
-                        <input type="text" id="nick_name" name="nick_name" placeholder="Enter nick name"
-                            value="<?php echo old('nick_name', $old); ?>">
+                        <label for="email">Email address</label>
+                        <input type="email" id="email" name="email"
+                               value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" required>
                     </div>
 
                     <div class="field">
-                        <label for="emergency_contact">Emergency - Contact</label>
-                        <input type="text" id="emergency_contact" name="emergency_contact"
-                            placeholder="Enter emergency contact number"
-                            value="<?php echo old('emergency_contact', $old); ?>" required>
-                    </div>
-
-                    <div class="field">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" placeholder="Enter email address"
-                            value="<?php echo old('email', $old); ?>" required>
-                    </div>
-
-                    <div class="field">
-                        <label for="permanent_address">Permanent Address</label>
-                        <input type="text" id="permanent_address" name="permanent_address"
-                            placeholder="Enter permanent address"
-                            value="<?php echo old('permanent_address', $old); ?>" required>
-                    </div>
-
-                    <div class="field">
-                        <label for="blood_group">Blood Group</label>
-                        <select id="blood_group" name="blood_group" required>
-                            <option value="" disabled <?php echo old('blood_group', $old) === "" ? "selected" : ""; ?>>Select blood group</option>
-                            <?php foreach (["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] as $bg): ?>
-                                <option value="<?php echo $bg; ?>" <?php echo old('blood_group', $old) === $bg ? "selected" : ""; ?>>
-                                    <?php echo $bg; ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div class="field">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password"
-                            placeholder="Create password (min 6 chars)" minlength="6" required>
-                    </div>
-
-                    <button type="submit" name="submit" class="btn-primary">Register</button>
-
-                </div>
-
-                <!-- Right panel -->
-                <div class="form-panel">
-
-                    <div class="field">
-                        <label for="last_name">Last Name</label>
-                        <input type="text" id="last_name" name="last_name" placeholder="Enter last name"
-                            value="<?php echo old('last_name', $old); ?>" required>
-                    </div>
-
-                    <div class="field">
-                        <label for="contract">Contract</label>
-                        <input type="text" id="contract" name="contract" placeholder="Enter contract number"
-                            value="<?php echo old('contract', $old); ?>" required>
-                    </div>
-
-                    <div class="field">
-                        <label for="dob">Date of Birth</label>
-                        <input type="date" id="dob" name="dob" value="<?php echo old('dob', $old); ?>" required>
-                    </div>
-
-                    <div class="field">
-                        <label for="address">Address</label>
-                        <input type="text" id="address" name="address" placeholder="Enter address"
-                            value="<?php echo old('address', $old); ?>" required>
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone"
+                               value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>" required>
                     </div>
 
                     <div class="field">
                         <label>Gender</label>
                         <div class="radio-group">
-                            <label><input type="radio" name="gender" value="Male"
-                                    <?php echo (old('gender', $old) === "Male" || old('gender', $old) === "") ? "checked" : ""; ?>>
-                                Male</label>
-                            <label><input type="radio" name="gender" value="Female"
-                                    <?php echo old('gender', $old) === "Female" ? "checked" : ""; ?>> Female</label>
-                            <label><input type="radio" name="gender" value="Others"
-                                    <?php echo old('gender', $old) === "Others" ? "checked" : ""; ?>> Others</label>
+                            <?php foreach (["Male", "Female", "Other"] as $g): ?>
+                                <label>
+                                    <input type="radio" name="gender"
+                                           value="<?= $g ?>" <?= ($_POST['gender'] ?? '') === $g ? 'checked' : '' ?> required>
+                                    <?= $g ?>
+                                </label>
+                            <?php endforeach; ?>
                         </div>
                     </div>
 
                     <div class="field">
-                        <label for="designation">Designation</label>
-                        <select id="designation" name="designation">
-                            <?php foreach (["Volunteer", "Coordinator", "Team Lead", "Admin"] as $d): ?>
-                                <option value="<?php echo $d; ?>" <?php echo old('designation', $old) === $d || (old('designation', $old) === "" && $d === "Volunteer") ? "selected" : ""; ?>>
-                                    <?php echo $d; ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
+                        <label for="address">Address</label>
+                        <textarea id="address" name="address" required><?= htmlspecialchars($_POST['address'] ?? '') ?></textarea>
+                    </div>
+
+                    <div class="field">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
                     </div>
 
                     <div class="field">
                         <label for="confirm_password">Confirm Password</label>
-                        <input type="password" id="confirm_password" name="confirm_password"
-                            placeholder="Confirm your password" minlength="6" required>
+                        <input type="password" id="confirm_password" name="confirm_password" required>
                     </div>
 
-                    <a href="index.php" class="btn-secondary">Back to Login</a>
+                    <div class="field">
+                        <label for="role">Role</label>
+                        <select id="role" name="role" required>
+                            <option value="" disabled <?= empty($_POST['role']) ? 'selected' : '' ?>>Select a role</option>
+                            <option value="Volunteer" <?= ($_POST['role'] ?? '') === 'Volunteer' ? 'selected' : '' ?>>Volunteer</option>
+                            <option value="Customer" <?= ($_POST['role'] ?? '') === 'Customer' ? 'selected' : '' ?>>Customer</option>
+                        </select>
+                    </div>
 
-                </div>
+                    <div class="field" id="skills-field" style="display:none">
+                        <label for="skills">Skills</label>
+                        <textarea id="skills" name="skills"
+                                  placeholder="e.g. First aid, teaching, logistics"><?= htmlspecialchars($_POST['skills'] ?? '') ?></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Create Account</button>
+                    <a href="index.php" class="btn-secondary">Already have an account? Sign In</a>
+
+                </form>
 
             </div>
-
-        </form>
+        </div>
 
     </div>
+
+    <script>
+        (function () {
+            var roleSelect = document.getElementById("role");
+            var skillsField = document.getElementById("skills-field");
+
+            function toggleSkills() {
+                skillsField.style.display = roleSelect.value === "Volunteer" ? "" : "none";
+            }
+
+            roleSelect.addEventListener("change", toggleSkills);
+            toggleSkills();
+        })();
+    </script>
 
 </body>
 
