@@ -5,7 +5,6 @@ session_start();
 $message = "";
 $messageType = ""; 
 
-// If the form was submitted, validate and save it
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $full_name = trim($_POST["full_name"] ?? "");
     $email     = trim($_POST["email"] ?? "");

@@ -157,7 +157,8 @@ body {
 }
 
 
-/* ---------- Hero ---------- */
+
+/*Hero*/
 
 .home-hero {
     position: relative;
@@ -275,7 +276,10 @@ body {
 }
 
 
-/* ---------- Section ---------- */
+
+
+
+/*Section*/
 
 .home-section {
     max-width: 1120px;
@@ -313,7 +317,9 @@ body {
 }
 
 
-/* ---------- About ---------- */
+
+
+/*About*/
 
 .about-content {
     display: grid;
@@ -394,8 +400,8 @@ body {
 }
 
 
-/* ---------- Features ---------- */
 
+/*Features*/
 .home-features {
     background: #fff;
 
@@ -467,8 +473,8 @@ body {
 }
 
 
-/* ---------- CTA ---------- */
 
+/*CTA*/
 .home-cta {
     max-width: 1120px;
 
@@ -532,7 +538,7 @@ body {
 }
 
 
-/* ---------- Footer ---------- */
+/*Footer*/
 
 .home-footer {
     padding: 35px 6%;
@@ -570,59 +576,9 @@ body {
 }
 
 
-/* ---------- Responsive ---------- */
-
-@media (max-width: 800px) {
-
-    .home-header {
-        padding: 0 25px;
-    }
-
-    .home-nav {
-        gap: 10px;
-    }
-
-    .home-nav a:not(.nav-signin):not(.nav-register) {
-        display: none;
-    }
-
-    .home-hero {
-        min-height: 650px;
-    }
-
-    .home-hero-content {
-        width: 88%;
-    }
-
-    .about-content {
-        grid-template-columns: 1fr;
-    }
-
-    .feature-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .home-cta {
-        margin: 50px 20px;
-
-        padding: 40px 30px;
-
-        flex-direction: column;
-
-        align-items: flex-start;
-    }
-
-    .home-footer {
-        flex-direction: column;
-
-        gap: 20px;
-
-        align-items: flex-start;
-    }
-}
 
 
-/* ---------- Register page ---------- */
+/*Register page*/
 .card-outer {
     background: #fff;
     border: 1px solid #d7d3ca;
@@ -725,7 +681,11 @@ body {
     background: #eef3f8;
 }
 
-/* ---------- Login page ---------- */
+
+
+
+
+/*Login page*/
 .login-outer {
     background: var(--deep-teal);
     border-radius: 18px;
@@ -773,21 +733,9 @@ body {
     text-decoration: underline;
 }
 
-@media (max-width: 720px) {
-    .login-outer {
-        flex-direction: column;
-    }
 
-    .login-side {
-        display: none;
-    }
 
-    .login-card {
-        margin: 20px;
-    }
-}
-
-/* ---------- Dashboard ---------- */
+/*Dashboard*/
 .dash-card {
     background: #fff;
     border: 1px solid #d7d3ca;
@@ -940,18 +888,4 @@ body {
 
 .btn-signin:hover {
     background: #16304d;
-}
-
-@media (max-width: 760px) {
-    .login-shell {
-        flex-direction: column;
-    }
-
-    .login-hero {
-        min-height: 160px;
-    }
-
-    .login-form-side {
-        padding: 30px 24px;
-    }
 }
