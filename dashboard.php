@@ -7,7 +7,7 @@ session_start();
 <head>
     <meta charset="UTF-8">
     <title>VolCord | Dashboard</title>
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -19,7 +19,6 @@ session_start();
     <div class="page-wrap">
 
         <h2 class="page-title">Volunteer Dashboard</h2>
-        <p class="page-subtitle">Session &amp; cookie status for this browser</p>
 
         <div class="dash-card">
             <h2>Session Data</h2>
@@ -49,11 +48,6 @@ session_start();
             <?php else: ?>
                 <div class="dash-row"><span>Status</span><span>No cookie.</span></div>
             <?php endif; ?>
-        </div>
-
-        <div class="dash-actions">
-            <a href="logout.php" class="btn-secondary">Remove Session</a>
-            <a href="remove_cookie.php" class="btn-secondary">Remove Cookie</a>
         </div>
 
     </div>

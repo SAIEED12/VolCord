@@ -1,5 +1,6 @@
 <?php
 require_once "config.php";
+session_start();
 
 $message = "";
 $messageType = ""; 
@@ -72,6 +73,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             if ($stmt->execute()) {
                 $stmt->close();
+
+                $_SESSION["volunteer_name"]  = $full_name;
+                $_SESSION["volunteer_email"] = $email;
+                $_SESSION["volunteer_id"]    = $conn->insert_id;
+
+                setcookie("volunteer_name",  $full_name, time() + 3600, "/");
+                setcookie("volunteer_email", $email,     time() + 3600, "/");
+
                 header("Location: dashboard.php");
                 exit;
             }
@@ -96,13 +105,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <body>
 
     <div class="header">
-        <h1>VolCoord</h1>
+        <h1>VolCord</h1>
     </div>
 
     <div class="page-wrap">
 
         <h2 class="page-title">Create Account</h2>
-        <p class="page-subtitle">Volunteer Coordination Management System</p>
 
         <?php if ($message): ?>
             <div class="<?= $messageType === "success" ? "flash-success" : "flash-error" ?>">
