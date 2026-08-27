@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+$flash_error = "";
+if (isset($_SESSION["flash_error"])) {
+    $flash_error = $_SESSION["flash_error"];
+    unset($_SESSION["flash_error"]);
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -28,6 +37,9 @@
 
         <div class="login-form-side">
             <div class="login-form-inner">
+                <?php if ($flash_error !== ""): ?>
+                    <div class="flash-error"><?= htmlspecialchars($flash_error) ?></div>
+                <?php endif; ?>
                 <p style="font-weight: 600; color: #333;">Welcome to Volcord!</p>
                 <h1 class="login-title">Sign in to your account</h1>
 
