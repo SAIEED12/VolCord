@@ -23,16 +23,18 @@ if (isset($_SESSION["flash_error"])) {
 
         <div class="login-hero">
             <div class="login-hero-tint"></div>
-            <div class="brand-mark">
-                <span class="brand-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="8" r="4" fill="#fff" />
-                        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#fff" stroke-width="2" stroke-linecap="round" />
-                        <path d="M18 4l1.4 1.4L22 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </span>
-                <span class="brand-word">VOLCORD</span>
-            </div>
+            <a href="index.php" class="brand-link">
+                <div class="brand-mark">
+                    <span class="brand-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="8" r="4" fill="#fff" />
+                            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+                            <path d="M18 4l1.4 1.4L22 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </span>
+                    <span class="brand-word">VOLCORD</span>
+                </div>
+            </a>
         </div>
 
         <div class="login-form-side">

@@ -33,6 +33,11 @@ body {
     font-weight: 700;
 }
 
+.header-brand {
+    text-decoration: none;
+    color: inherit;
+}
+
 .page-wrap {
     background: var(--cream);
     margin: 0 18px 18px 18px;
@@ -802,6 +807,11 @@ body {
     margin-left: 6px;
     color: var(--navy);
     font-weight: 600;
+}
+
+.brand-link {
+    text-decoration: none;
+    color: inherit;
 }
 
 .brand-mark {

@@ -38,7 +38,7 @@ $result = $opps->get_result();
 <body>
 
     <div class="header">
-        <h1>VolCord</h1>
+        <a href="index.php" class="header-brand"><h1>VolCord</h1></a>
         <div class="header-right">
             <span class="welcome">Hi, <?= htmlspecialchars($_SESSION["volunteer_name"]) ?></span>
             <a href="logout.php" class="btn-signout">Sign Out</a>

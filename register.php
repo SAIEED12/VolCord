@@ -110,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <body>
 
     <div class="header">
-        <h1>VolCord</h1>
+        <a href="index.php" class="header-brand"><h1>VolCord</h1></a>
     </div>
 
     <div class="page-wrap">
