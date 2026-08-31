@@ -23,6 +23,29 @@ $approved = $conn->query(
      WHERE o.status IN ('approved', 'completed')
      ORDER BY o.created_at DESC"
 );
+
+$total_users = $conn->query("SELECT COUNT(*) AS cnt FROM users")->fetch_assoc()["cnt"];
+$total_volunteers = $conn->query("SELECT COUNT(*) AS cnt FROM users WHERE role='Volunteer'")->fetch_assoc()["cnt"];
+
+$opp_pending_count = $conn->query("SELECT COUNT(*) AS cnt FROM opportunities WHERE status='pending'")->fetch_assoc()["cnt"];
+$opp_approved_count = $conn->query("SELECT COUNT(*) AS cnt FROM opportunities WHERE status='approved'")->fetch_assoc()["cnt"];
+
+$opp_by_status_rows = $conn->query("SELECT status, COUNT(*) AS cnt FROM opportunities GROUP BY status");
+$opp_by_status = [];
+while ($row = $opp_by_status_rows->fetch_assoc()) {
+    $opp_by_status[$row["status"]] = (int) $row["cnt"];
+}
+
+$apps_per_month_rows = $conn->query(
+    "SELECT DATE_FORMAT(applied_at, '%Y-%m') AS month, COUNT(*) AS cnt
+     FROM applications
+     WHERE applied_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+     GROUP BY month ORDER BY month"
+);
+$apps_per_month = [];
+while ($row = $apps_per_month_rows->fetch_assoc()) {
+    $apps_per_month[] = $row;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -48,6 +71,40 @@ $approved = $conn->query(
 
         <h2 class="page-title">Admin Dashboard</h2>
         <p class="page-subtitle">Review opportunities and assign volunteers.</p>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number"><?= (int) $total_users ?></div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><?= (int) $total_volunteers ?></div>
+                <div class="stat-label">Volunteers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><?= (int) $opp_approved_count ?></div>
+                <div class="stat-label">Active Opportunities</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><?= (int) $opp_pending_count ?></div>
+                <div class="stat-label">Pending Approvals</div>
+            </div>
+        </div>
+
+        <div class="chart-row">
+            <div class="chart-card">
+                <h3>Opportunities by Status</h3>
+                <div class="chart-container">
+                    <canvas id="oppStatusChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Applications (Last 6 Months)</h3>
+                <div class="chart-container">
+                    <canvas id="appsMonthlyChart"></canvas>
+                </div>
+            </div>
+        </div>
 
         <section class="dash-card wide">
             <h2>Pending Approval</h2>
@@ -147,6 +204,34 @@ $approved = $conn->query(
         </section>
 
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const oppStatusData = <?= json_encode($opp_by_status) ?>;
+        const appsMonthlyData = <?= json_encode($apps_per_month) ?>;
+
+        const statusLabels = Object.keys(oppStatusData);
+        const statusValues = Object.values(oppStatusData);
+        const statusColors = { pending: '#f59e0b', approved: '#10b981', rejected: '#ef4444', completed: '#1e3a5f' };
+
+        new Chart(document.getElementById('oppStatusChart'), {
+            type: 'doughnut',
+            data: {
+                labels: statusLabels.map(s => s.charAt(0).toUpperCase() + s.slice(1)),
+                datasets: [{ data: statusValues, backgroundColor: statusLabels.map(s => statusColors[s] || '#94a3b8'), borderWidth: 2, borderColor: '#fff' }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { padding: 16, font: { size: 13 } } } } }
+        });
+
+        const monthLabels = appsMonthlyData.map(d => { const [y, m] = d.month.split('-'); return new Date(y, m - 1).toLocaleDateString('en-US', { month: 'short', year: '2-digit' }); });
+        const monthValues = appsMonthlyData.map(d => d.cnt);
+
+        new Chart(document.getElementById('appsMonthlyChart'), {
+            type: 'bar',
+            data: { labels: monthLabels, datasets: [{ label: 'Applications', data: monthValues, backgroundColor: '#1e3a5f', borderRadius: 6, maxBarThickness: 40 }] },
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { display: false } } }
+        });
+    </script>
 
 </body>
 
