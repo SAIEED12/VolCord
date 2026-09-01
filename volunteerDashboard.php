@@ -24,7 +24,7 @@ $open = $conn->query(
 
 $applied_ids = [];
 $my_apps = $conn->prepare(
-    "SELECT a.id, a.status, a.message, a.applied_at, o.title, o.location
+    "SELECT a.opportunity_id, a.status, a.message, a.applied_at, o.title, o.location
      FROM applications a
      JOIN opportunities o ON o.id = a.opportunity_id
      WHERE a.volunteer_id = ?
@@ -34,7 +34,7 @@ $my_apps->bind_param("i", $volunteer_id);
 $my_apps->execute();
 $my_apps_result = $my_apps->get_result();
 while ($r = $my_apps_result->fetch_assoc()) {
-    $applied_ids[$r["id"]] = $r["status"];
+    $applied_ids[$r["opportunity_id"]] = $r["status"];
 }
 ?>
 <!DOCTYPE html>
