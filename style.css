@@ -280,6 +280,35 @@ body {
     background: rgba(255,255,255,0.12);
 }
 
+.login-hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.hero-copy {
+    position: relative;
+    z-index: 2;
+    padding: 0 48px 56px;
+    color: #fff;
+    max-width: 480px;
+}
+
+.hero-heading {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 14px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.35);
+}
+
+.hero-subtext {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.85);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
 
 
 
