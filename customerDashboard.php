@@ -11,8 +11,12 @@ $customer_id = $_SESSION["volunteer_id"];
 
 $flash_error = "";
 $flash_success = "";
-if (isset($_SESSION["flash_error"])) { $flash_error = $_SESSION["flash_error"]; unset($_SESSION["flash_error"]); }
-if (isset($_SESSION["flash_success"])) { $flash_success = $_SESSION["flash_success"]; unset($_SESSION["flash_success"]); }
+if (isset($_SESSION["flash_error"])) 
+    { $flash_error = $_SESSION["flash_error"]; 
+unset($_SESSION["flash_error"]); }
+if (isset($_SESSION["flash_success"])) 
+    { $flash_success = $_SESSION["flash_success"]; 
+unset($_SESSION["flash_success"]); }
 
 $opps = $conn->prepare(
     "SELECT o.id, o.title, o.location, o.needed_date, o.status, o.created_at,
