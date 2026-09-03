@@ -56,6 +56,7 @@ $result = $opps->get_result();
 
         <?php if ($flash_error): ?><div class="flash-error"><?= htmlspecialchars($flash_error) ?></div><?php endif; ?>
         <?php if ($flash_success): ?><div class="flash-success"><?= htmlspecialchars($flash_success) ?></div><?php endif; ?>
+        <div id="ajax-message" class="flash-success" style="display:none;"></div>
 
         <div class="dash-grid">
 
@@ -122,6 +123,47 @@ $result = $opps->get_result();
 
     </div>
 
+    <script>
+        (function() {
+            var form = document.querySelector("form.form-panel");
+            var msgDiv = document.getElementById("ajax-message");
+            var btn = form.querySelector("button[type=submit]");
+            var origText = btn.textContent;
+
+            form.addEventListener("submit", function(e) {
+                e.preventDefault();
+                btn.textContent = "Posting...";
+                btn.disabled = true;
+                msgDiv.style.display = "none";
+
+                var data = new FormData(form);
+                data.append("action", "post_opportunity");
+
+                fetch("ajax_handler.php?action=post_opportunity", {
+                    method: "POST",
+                    body: data
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(res) {
+                    btn.textContent = origText;
+                    btn.disabled = false;
+                    msgDiv.textContent = res.message;
+                    msgDiv.className = res.success ? "flash-success" : "flash-error";
+                    msgDiv.style.display = "block";
+                    if (res.success) {
+                        form.reset();
+                    }
+                })
+                .catch(function() {
+                    msgDiv.textContent = "Network error. Please try again.";
+                    msgDiv.className = "flash-error";
+                    msgDiv.style.display = "block";
+                    btn.textContent = origText;
+                    btn.disabled = false;
+                });
+            });
+        })();
+    </script>
 </body>
 
 </html>

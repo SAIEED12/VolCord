@@ -135,6 +135,44 @@ while ($r = $my_apps_result->fetch_assoc()) {
 
     </div>
 
+    <script>
+        document.querySelectorAll(".apply-form").forEach(function(form) {
+            form.addEventListener("submit", function(e) {
+                e.preventDefault();
+                var f = this;
+                var btn = f.querySelector("button[type=submit]");
+                var origText = btn.textContent;
+                btn.textContent = "Applying...";
+                btn.disabled = true;
+
+                var data = new FormData(f);
+                data.append("action", "apply");
+
+                fetch("ajax_handler.php?action=apply", {
+                    method: "POST",
+                    body: data
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(res) {
+                    if (res.success) {
+                        var badge = document.createElement("p");
+                        badge.className = "applied-note";
+                        badge.innerHTML = "Application: <span class=\"badge badge-pending\">Pending</span>";
+                        f.replaceWith(badge);
+                    } else {
+                        alert(res.message);
+                        btn.textContent = origText;
+                        btn.disabled = false;
+                    }
+                })
+                .catch(function() {
+                    alert("Network error. Please try again.");
+                    btn.textContent = origText;
+                    btn.disabled = false;
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

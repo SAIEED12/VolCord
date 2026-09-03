@@ -19,7 +19,7 @@ $password_hash = password_hash($admin_password, PASSWORD_DEFAULT);
 $full_name = "System Administrator";
 $role = "Admin";
 $phone = "0000000000";
-$gender = "Other";
+$gender = "Male";
 $address = "VolCord HQ";
 
 $stmt = $conn->prepare(

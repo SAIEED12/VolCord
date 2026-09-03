@@ -231,6 +231,88 @@ while ($row = $apps_per_month_rows->fetch_assoc()) {
             data: { labels: monthLabels, datasets: [{ label: 'Applications', data: monthValues, backgroundColor: '#1e3a5f', borderRadius: 6, maxBarThickness: 40 }] },
             options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { display: false } } }
         });
+
+        document.querySelectorAll(".opp-actions a").forEach(function(link) {
+            link.addEventListener("click", function(e) {
+                e.preventDefault();
+                var btn = this;
+                var isApprove = btn.classList.contains("btn-approve");
+                var actionType = isApprove ? "approve" : "reject";
+                var id = new URL(btn.href).searchParams.get("id");
+                var origText = btn.textContent;
+                btn.textContent = "...";
+                btn.style.pointerEvents = "none";
+
+                var formData = new FormData();
+                formData.append("action", "review_opportunity");
+                formData.append("id", id);
+                formData.append("action_type", actionType);
+
+                fetch("ajax_handler.php?action=review_opportunity", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(res) {
+                    if (res.success) {
+                        var card = btn.closest(".opp-item");
+                        card.style.opacity = "0";
+                        card.style.transition = "opacity 0.3s";
+                        setTimeout(function() { card.remove(); }, 300);
+                    } else {
+                        alert(res.message);
+                        btn.textContent = origText;
+                        btn.style.pointerEvents = "";
+                    }
+                })
+                .catch(function() {
+                    alert("Network error. Please try again.");
+                    btn.textContent = origText;
+                    btn.style.pointerEvents = "";
+                });
+            });
+        });
+
+        document.querySelectorAll(".btn-approve-sm, .btn-reject-sm").forEach(function(link) {
+            link.addEventListener("click", function(e) {
+                e.preventDefault();
+                var btn = this;
+                var isAccept = btn.classList.contains("btn-approve-sm");
+                var actionType = isAccept ? "accept" : "reject";
+                var id = new URL(btn.href).searchParams.get("id");
+                var origText = btn.textContent;
+                btn.textContent = "...";
+                btn.style.pointerEvents = "none";
+
+                var formData = new FormData();
+                formData.append("action", "review_application");
+                formData.append("id", id);
+                formData.append("action_type", actionType);
+
+                fetch("ajax_handler.php?action=review_application", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(res) {
+                    if (res.success) {
+                        var td = btn.closest("td");
+                        var newStatus = actionType === "accept" ? "Accepted" : "Rejected";
+                        var badgeClass = actionType === "accept" ? "badge-accepted" : "badge-rejected";
+                        td.innerHTML = '<span class="badge ' + badgeClass + '">' + newStatus + '</span>';
+                    } else {
+                        alert(res.message);
+                        btn.textContent = origText;
+                        btn.style.pointerEvents = "";
+                    }
+                })
+                .catch(function() {
+                    alert("Network error. Please try again.");
+                    btn.textContent = origText;
+                    btn.style.pointerEvents = "";
+                });
+            });
+        });
     </script>
 
 </body>

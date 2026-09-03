@@ -44,6 +44,7 @@ if (isset($_SESSION["flash_error"])) {
 
         <div class="login-form-side">
             <div class="login-form-inner">
+                <div id="ajax-error" class="flash-error" style="display:none;"></div>
                 <?php if ($flash_error !== ""): ?>
                     <div class="flash-error"><?= htmlspecialchars($flash_error) ?></div>
                 <?php endif; ?>
@@ -74,6 +75,43 @@ if (isset($_SESSION["flash_error"])) {
 
     </div>
 
+    <script>
+        document.querySelector("form").addEventListener("submit", function(e) {
+            e.preventDefault();
+            var form = this;
+            var errDiv = document.getElementById("ajax-error");
+            var btn = form.querySelector("button[type=submit]");
+            var origText = btn.textContent;
+            btn.textContent = "Signing in...";
+            btn.disabled = true;
+            errDiv.style.display = "none";
+
+            var data = new FormData(form);
+            data.append("action", "login");
+
+            fetch("ajax_handler.php?action=login", {
+                method: "POST",
+                body: data
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(res) {
+                if (res.success) {
+                    window.location.href = res.redirect;
+                } else {
+                    errDiv.textContent = res.message;
+                    errDiv.style.display = "block";
+                    btn.textContent = origText;
+                    btn.disabled = false;
+                }
+            })
+            .catch(function() {
+                errDiv.textContent = "Network error. Please try again.";
+                errDiv.style.display = "block";
+                btn.textContent = origText;
+                btn.disabled = false;
+            });
+        });
+    </script>
 </body>
 
 </html>

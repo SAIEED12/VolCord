@@ -122,6 +122,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <?= htmlspecialchars($message) ?>
             </div>
         <?php endif; ?>
+        <div id="ajax-message" class="flash-error" style="display:none;"></div>
 
         <div class="card-outer">
             <div class="form-panel">
@@ -210,6 +211,45 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             roleSelect.addEventListener("change", toggleSkills);
             toggleSkills();
+
+            var form = document.querySelector("form");
+            var msgDiv = document.getElementById("ajax-message");
+            var btn = form.querySelector("button[type=submit]");
+            var origText = btn.textContent;
+
+            form.addEventListener("submit", function(e) {
+                e.preventDefault();
+                btn.textContent = "Creating account...";
+                btn.disabled = true;
+                msgDiv.style.display = "none";
+
+                var data = new FormData(form);
+                data.append("action", "register");
+
+                fetch("ajax_handler.php?action=register", {
+                    method: "POST",
+                    body: data
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(res) {
+                    if (res.success) {
+                        window.location.href = res.redirect;
+                    } else {
+                        msgDiv.textContent = res.message;
+                        msgDiv.className = "flash-error";
+                        msgDiv.style.display = "block";
+                        btn.textContent = origText;
+                        btn.disabled = false;
+                    }
+                })
+                .catch(function() {
+                    msgDiv.textContent = "Network error. Please try again.";
+                    msgDiv.className = "flash-error";
+                    msgDiv.style.display = "block";
+                    btn.textContent = origText;
+                    btn.disabled = false;
+                });
+            });
         })();
     </script>
 
