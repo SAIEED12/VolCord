@@ -6,6 +6,19 @@ Instead of scattered spreadsheets and manual coordination, Volunteers create pro
 
 Built as a simple, no-framework PHP + MySQL app designed to run on XAMPP.
 
+<img width="1898" height="888" alt="image" src="https://github.com/user-attachments/assets/d542e787-37c0-414b-8e3c-14fc2655cb9d" />
+<img width="1919" height="926" alt="image" src="https://github.com/user-attachments/assets/94a7e556-94b8-4488-be1d-d9c86c2c9b93" />
+<img width="1902" height="928" alt="image" src="https://github.com/user-attachments/assets/f23324f3-791c-4b12-9961-41c578cabec1" />
+<img width="1899" height="926" alt="image" src="https://github.com/user-attachments/assets/7cf3781f-39cf-46a9-a173-7ad44fd204ad" />
+<img width="1902" height="928" alt="image" src="https://github.com/user-attachments/assets/f6f22a09-3b01-44c6-b0b9-1ef648047bb1" />
+<img width="1900" height="929" alt="image" src="https://github.com/user-attachments/assets/863eb234-0576-4979-809f-618d0f5b1088" />
+<img width="1902" height="924" alt="image" src="https://github.com/user-attachments/assets/af431cc7-5231-410a-a5b4-c6a355d67c86" />
+<img width="1901" height="930" alt="image" src="https://github.com/user-attachments/assets/a1d8f284-449b-4b70-9ba7-42e014d7f1b5" />
+<img width="1898" height="924" alt="image" src="https://github.com/user-attachments/assets/27b5ed32-2ff2-4f1a-afb6-1169e1b03daf" />
+<img width="1899" height="927" alt="image" src="https://github.com/user-attachments/assets/be89eca7-00b1-4d7b-9a0a-cbec40007ab3" />
+<img width="1901" height="923" alt="image" src="https://github.com/user-attachments/assets/1ecbefc8-37e3-48e8-aac4-6817d5f51caf" />
+<img width="1897" height="924" alt="image" src="https://github.com/user-attachments/assets/5104459a-179d-4345-a2fc-0ace3df0e8e5" />
+
 ## Features
 
 ### Volunteer
