@@ -113,7 +113,7 @@ Entity flow: `Customer posts (pending) -> Admin approves -> Volunteer applies (p
    ```bash
    # Option A: clone
    cd C:\xampp\htdocs
-   git clone <your-repo-url> volcord
+   git clone 
 
    # Option B: copy this folder to
    C:\xampp\htdocs\volcord
