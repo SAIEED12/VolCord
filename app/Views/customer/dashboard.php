@@ -1,33 +1,18 @@
 <?php
-require_once "config.php";
-session_start();
+require_once __DIR__ . '/../../Helpers/Auth.php';
+require_once __DIR__ . '/../../Helpers/Flash.php';
+require_once __DIR__ . '/../../Controllers/DashboardController.php';
 
-if (($_SESSION["user_role"] ?? "") !== "Customer") {
-    header("Location: login.php");
-    exit;
-}
+Auth::requireRole("Customer", "../auth/login.php");
 
 $customer_id = $_SESSION["volunteer_id"];
+$userName = $_SESSION["volunteer_name"] ?? "";
 
-$flash_error = "";
-$flash_success = "";
-if (isset($_SESSION["flash_error"])) 
-    { $flash_error = $_SESSION["flash_error"]; 
-unset($_SESSION["flash_error"]); }
-if (isset($_SESSION["flash_success"])) 
-    { $flash_success = $_SESSION["flash_success"]; 
-unset($_SESSION["flash_success"]); }
+$flash_error = Flash::getError();
+$flash_success = Flash::getSuccess();
 
-$opps = $conn->prepare(
-    "SELECT o.id, o.title, o.location, o.needed_date, o.status, o.created_at,
-            (SELECT COUNT(*) FROM applications a WHERE a.opportunity_id = o.id) AS applications_count
-     FROM opportunities o
-     WHERE o.customer_id = ?
-     ORDER BY o.created_at DESC"
-);
-$opps->bind_param("i", $customer_id);
-$opps->execute();
-$result = $opps->get_result();
+$data = CustomerController::data($customer_id);
+$opps = $data["opportunities"];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -36,18 +21,12 @@ $result = $opps->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VolCord | Customer Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../../../public/assets/css/style.css">
 </head>
 
 <body>
 
-    <div class="header">
-        <a href="index.php" class="header-brand"><h1>VolCord</h1></a>
-        <div class="header-right">
-            <span class="welcome">Hi, <?= htmlspecialchars($_SESSION["volunteer_name"]) ?></span>
-            <a href="logout.php" class="btn-signout">Sign Out</a>
-        </div>
-    </div>
+    <?php include __DIR__ . '/../layouts/header.php'; ?>
 
     <div class="page-wrap">
 
@@ -62,7 +41,7 @@ $result = $opps->get_result();
 
             <section class="dash-card wide">
                 <h2>Post a New Opportunity</h2>
-                <form method="POST" action="post_opportunity.php" class="form-panel">
+                <form method="POST" action="../../Controllers/OpportunityController.php" class="form-panel">
                     <div class="field">
                         <label for="title">Title</label>
                         <input type="text" id="title" name="title" required>
@@ -91,7 +70,7 @@ $result = $opps->get_result();
 
             <section class="dash-card wide">
                 <h2>Your Opportunities</h2>
-                <?php if ($result->num_rows === 0): ?>
+                <?php if (count($opps) === 0): ?>
                     <p class="empty-note">You have not posted any opportunities yet.</p>
                 <?php else: ?>
                     <table class="data-table">
@@ -105,7 +84,7 @@ $result = $opps->get_result();
                             </tr>
                         </thead>
                         <tbody>
-                            <?php while ($row = $result->fetch_assoc()): ?>
+                            <?php foreach ($opps as $row): ?>
                                 <tr>
                                     <td><?= htmlspecialchars($row["title"]) ?></td>
                                     <td><?= htmlspecialchars($row["location"]) ?></td>
@@ -113,7 +92,7 @@ $result = $opps->get_result();
                                     <td><span class="badge badge-<?= strtolower($row["status"]) ?>"><?= htmlspecialchars(ucfirst($row["status"])) ?></span></td>
                                     <td><?= (int) $row["applications_count"] ?></td>
                                 </tr>
-                            <?php endwhile; ?>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 <?php endif; ?>
@@ -139,7 +118,7 @@ $result = $opps->get_result();
                 var data = new FormData(form);
                 data.append("action", "post_opportunity");
 
-                fetch("ajax_handler.php?action=post_opportunity", {
+                fetch("../../Controllers/AjaxController.php?action=post_opportunity", {
                     method: "POST",
                     body: data
                 })

@@ -1,11 +1,9 @@
 <?php
-session_start();
+require_once __DIR__ . '/../../Helpers/Auth.php';
+require_once __DIR__ . '/../../Helpers/Flash.php';
+Auth::start();
 
-$flash_error = "";
-if (isset($_SESSION["flash_error"])) {
-    $flash_error = $_SESSION["flash_error"];
-    unset($_SESSION["flash_error"]);
-}
+$flash_error = Flash::getError();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,7 +12,7 @@ if (isset($_SESSION["flash_error"])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VolCoord | Sign In</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../../../public/assets/css/style.css">
 </head>
 
 <body class="login-page">
@@ -23,7 +21,7 @@ if (isset($_SESSION["flash_error"])) {
 
        <div class="login-hero">
     <div class="login-hero-tint"></div>
-    <a href="index.php" class="brand-link">
+    <a href="../home/index.php" class="brand-link">
         <div class="brand-mark">
             <span class="brand-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -51,7 +49,7 @@ if (isset($_SESSION["flash_error"])) {
                 <p style="font-weight: 600; color: #333;">Welcome to Volcord!</p>
                 <h1 class="login-title">Sign in to your account</h1>
 
-                <form action="login_submit.php" method="POST">
+                <form action="../../Controllers/AuthController.php" method="POST">
 
                     <div class="field">
                         <label for="email">Email address</label>
@@ -89,7 +87,7 @@ if (isset($_SESSION["flash_error"])) {
             var data = new FormData(form);
             data.append("action", "login");
 
-            fetch("ajax_handler.php?action=login", {
+            fetch("../../Controllers/AjaxController.php?action=login", {
                 method: "POST",
                 body: data
             })

@@ -44,11 +44,11 @@ Built as a simple, no-framework PHP + MySQL app designed to run on XAMPP.
 - View volunteer skills + contact info inline
 
 ### Auth & UX
-- Role-based login + session routing: `Volunteer -> volunteerDashboard.php`, `Customer -> customerDashboard.php`, `Admin -> adminDashboard.php`
+- Role-based login + session routing: `Volunteer -> app/Views/volunteer/dashboard.php`, `Customer -> app/Views/customer/dashboard.php`, `Admin -> app/Views/admin/dashboard.php`
 - Secure password hashing with `password_hash() / password_verify()`
-- Prepared statements (mysqli) throughout
-- AJAX via `fetch()` to `ajax_handler.php` for login, register, apply, post, reviews
-- Responsive landing page + dashboards with vanilla CSS (`style.css`)
+- Prepared statements (mysqli) throughout via `app/Models/`
+- AJAX via `fetch()` to `app/Controllers/AjaxController.php` for login, register, apply, post, reviews
+- Responsive landing page + dashboards with vanilla CSS (`public/assets/css/style.css`)
 
 ## Tech Stack
 
@@ -67,30 +67,38 @@ No build step, no npm/composer dependencies.
 
 ```
 volcord/
-├── index.php               # Landing page (About, Features, CTA)
-├── register.php            # Create Account (Volunteer / Customer)
-├── login.php               # Sign In form + AJAX login
-├── login_submit.php        # Non-AJAX fallback login handler
-├── logout.php              # Destroy session
-├── config.php              # MySQLi DB connection
-├── database.sql            # DB + tables schema
-├── seed_admin.php          # One-time admin seeder
-├── ajax_handler.php        # JSON API: login, register, apply, post_opportunity, review_opportunity, review_application
-├── volunteerDashboard.php  # Browse + apply + my applications
-├── customerDashboard.php   # Post opportunity + my opportunities
-├── adminDashboard.php      # Approve opportunities, assign volunteers, stats + charts
-├── apply.php               # Non-AJAX fallback for volunteer apply
-├── post_opportunity.php    # Non-AJAX fallback for posting
-├── review_opportunity.php  # Non-AJAX fallback approve/reject opportunity
-├── review_application.php  # Non-AJAX fallback accept/reject application
-├── style.css               # All styling
-├── hero.jpg, Home.png, Login.png, adminDashboard.png, adminDashboard2.png # Screenshots / assets
+├── index.php                         # Entry redirect -> app/Views/home/index.php
+├── config/database.php               # MySQLi DB connection (ex config.php)
+├── app/
+│   ├── Controllers/
+│   │   ├── AuthController.php        # login / register / logout (ex login_submit.php, register POST, logout.php)
+│   │   ├── OpportunityController.php # post + approve/reject (ex post_opportunity.php, review_opportunity.php)
+│   │   ├── ApplicationController.php # apply + accept/reject (ex apply.php, review_application.php)
+│   │   ├── DashboardController.php   # Volunteer/Customer/Admin data providers
+│   │   └── AjaxController.php        # JSON API (ex ajax_handler.php)
+│   ├── Models/
+│   │   ├── Database.php              # shared connection
+│   │   ├── User.php                  # users table queries
+│   │   ├── Opportunity.php           # opportunities table queries
+│   │   └── Application.php           # applications table queries
+│   ├── Helpers/Auth.php + Flash.php  # session guard + flash messages
+│   └── Views/
+│       ├── home/index.php            # Landing page (ex index.php)
+│       ├── auth/login.php + register.php
+│       ├── volunteer/dashboard.php   # (ex volunteerDashboard.php)
+│       ├── customer/dashboard.php    # (ex customerDashboard.php)
+│       ├── admin/dashboard.php       # (ex adminDashboard.php)
+│       └── layouts/header.php
+├── database/schema.sql               # DB + tables (ex database.sql)
+├── database/seed_admin.php           # One-time admin seeder (ex seed_admin.php)
+├── public/assets/css/style.css       # All styling (ex style.css)
+├── public/assets/img/                # hero.jpg + screenshots
 └── README.md
 ```
 
 ## Database Schema
 
-Database: `volcord` — see `database.sql` for full DDL.
+Database: `volcord` — see `database/schema.sql` for full DDL.
 
 - `users(id, full_name, email UNIQUE, password_hash, role, skills, phone, gender, address, created_at)`
   - `role`: `Volunteer | Customer | Admin` (register only allows Volunteer/Customer, Admin via seeder)
@@ -128,21 +136,21 @@ Entity flow: `Customer posts (pending) -> Admin approves -> Volunteer applies (p
    ```sql
    CREATE DATABASE IF NOT EXISTS volcord;
    ```
-   Then import `C:\xampp\htdocs\volcord\database.sql`.
+   Then import `C:\xampp\htdocs\volcord\database\schema.sql`.
 
    Or via shell:
    ```bash
-   mysql -u root < C:\xampp\htdocs\volcord\database.sql
+   mysql -u root < C:\xampp\htdocs\volcord\database\schema.sql
    ```
 
-4. **Verify DB config** in `config.php`:
+4. **Verify DB config** in `config/database.php`:
    ```php
    $conn = new mysqli("localhost", "root", "", "volcord");
    ```
    Change host/user/pass/dbname if your MySQL credentials differ.
 
 5. **Create admin account (one time):**
-   Visit `http://localhost/volcord/seed_admin.php`
+   Visit `http://localhost/volcord/database/seed_admin.php`
    ```
    Email: admin@volcord.local
    Password: Admin@1234
@@ -157,33 +165,33 @@ Entity flow: `Customer posts (pending) -> Admin approves -> Volunteer applies (p
 
 ## Usage
 
-1. `/` — landing, click Get Started / Sign In
-2. `/register.php` — choose Role. Volunteers must list skills.
-3. `/login.php` — auto-routed by role after login
-4. Customer: `customerDashboard.php` -> Post a New Opportunity -> waits for `pending` approval
-5. Admin: `adminDashboard.php` -> Pending Approval -> Approve -> appears in Volunteer dashboard
-6. Volunteer: `volunteerDashboard.php` -> Open Opportunities -> Apply -> track in My Applications
+1. `/` — landing (`app/Views/home/index.php`), click Get Started / Sign In
+2. `app/Views/auth/register.php` — choose Role. Volunteers must list skills.
+3. `app/Views/auth/login.php` — auto-routed by role after login
+4. Customer: `app/Views/customer/dashboard.php` -> Post a New Opportunity -> waits for `pending` approval
+5. Admin: `app/Views/admin/dashboard.php` -> Pending Approval -> Approve -> appears in Volunteer dashboard
+6. Volunteer: `app/Views/volunteer/dashboard.php` -> Open Opportunities -> Apply -> track in My Applications
 7. Admin: Approved Opportunities table -> Accept / Reject applicants
 
 ## Configuration
 
-All config is in `config.php` — single mysqli connection shared via `require_once "config.php"`. No `.env` needed.
+All config is in `config/database.php` — single mysqli connection shared via `app/Models/Database.php`. No `.env` needed.
 
-To change admin seed credentials, edit `seed_admin.php` before first run.
+To change admin seed credentials, edit `database/seed_admin.php` before first run.
 
 ## Screenshots
 
-- `Home.png` — landing page
-- `Login.png` — sign in
-- `adminDashboard.png` / `adminDashboard2.png` — admin stats, charts, approvals
-- `hero.jpg` — hero background
+- `public/assets/img/Home.png` — landing page
+- `public/assets/img/Login.png` — sign in
+- `public/assets/img/adminDashboard.png` / `adminDashboard2.png` — admin stats, charts, approvals
+- `public/assets/img/hero.jpg` — hero background
 
 ## Troubleshooting
 
-- `Connection failed`: MySQL not running, or wrong creds in `config.php`.
-- Blank page / redirect to `login.php`: session role mismatch — sign in with correct role account.
-- `An admin account already exists`: `seed_admin.php` runs only once by design.
-- AJAX `Network error`: check `ajax_handler.php?action=...` path, Apache running, browser console for JSON errors.
+- `Connection failed`: MySQL not running, or wrong creds in `config/database.php`.
+- Blank page / redirect to `app/Views/auth/login.php`: session role mismatch — sign in with correct role account.
+- `An admin account already exists`: `database/seed_admin.php` runs only once by design.
+- AJAX `Network error`: check `app/Controllers/AjaxController.php?action=...` path, Apache running, browser console for JSON errors.
 - Chart.js not loading: requires internet for CDN.
 
 ## Future Improvements

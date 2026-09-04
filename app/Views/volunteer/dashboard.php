@@ -1,41 +1,20 @@
 <?php
-require_once "config.php";
-session_start();
+require_once __DIR__ . '/../../Helpers/Auth.php';
+require_once __DIR__ . '/../../Helpers/Flash.php';
+require_once __DIR__ . '/../../Controllers/DashboardController.php';
 
-if (($_SESSION["user_role"] ?? "") !== "Volunteer") {
-    header("Location: login.php");
-    exit;
-}
+Auth::requireRole("Volunteer", "../auth/login.php");
 
 $volunteer_id = $_SESSION["volunteer_id"];
+$userName = $_SESSION["volunteer_name"] ?? "";
 
-$flash_error = "";
-$flash_success = "";
-if (isset($_SESSION["flash_error"])) { $flash_error = $_SESSION["flash_error"]; unset($_SESSION["flash_error"]); }
-if (isset($_SESSION["flash_success"])) { $flash_success = $_SESSION["flash_success"]; unset($_SESSION["flash_success"]); }
+$flash_error = Flash::getError();
+$flash_success = Flash::getSuccess();
 
-$open = $conn->query(
-    "SELECT o.id, o.title, o.location, o.needed_date, o.description, o.required_skills, u.full_name AS customer
-     FROM opportunities o
-     JOIN users u ON u.id = o.customer_id
-     WHERE o.status = 'approved'
-     ORDER BY o.needed_date ASC, o.created_at DESC"
-);
-
-$applied_ids = [];
-$my_apps = $conn->prepare(
-    "SELECT a.opportunity_id, a.status, a.message, a.applied_at, o.title, o.location
-     FROM applications a
-     JOIN opportunities o ON o.id = a.opportunity_id
-     WHERE a.volunteer_id = ?
-     ORDER BY a.applied_at DESC"
-);
-$my_apps->bind_param("i", $volunteer_id);
-$my_apps->execute();
-$my_apps_result = $my_apps->get_result();
-while ($r = $my_apps_result->fetch_assoc()) {
-    $applied_ids[$r["opportunity_id"]] = $r["status"];
-}
+$data = VolunteerController::data($volunteer_id);
+$open = $data["open"];
+$myApps = $data["myApps"];
+$applied_ids = $data["appliedMap"];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -44,18 +23,12 @@ while ($r = $my_apps_result->fetch_assoc()) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VolCord | Volunteer Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../../../public/assets/css/style.css">
 </head>
 
 <body>
 
-    <div class="header">
-        <a href="index.php" class="header-brand"><h1>VolCord</h1></a>
-        <div class="header-right">
-            <span class="welcome">Hi, <?= htmlspecialchars($_SESSION["volunteer_name"]) ?></span>
-            <a href="logout.php" class="btn-signout">Sign Out</a>
-        </div>
-    </div>
+    <?php include __DIR__ . '/../layouts/header.php'; ?>
 
     <div class="page-wrap">
 
@@ -67,10 +40,10 @@ while ($r = $my_apps_result->fetch_assoc()) {
 
         <section class="dash-card wide">
             <h2>Open Opportunities</h2>
-            <?php if ($open->num_rows === 0): ?>
+            <?php if (count($open) === 0): ?>
                 <p class="empty-note">No open opportunities available right now.</p>
             <?php else: ?>
-                <?php while ($op = $open->fetch_assoc()): ?>
+                <?php foreach ($open as $op): ?>
                     <div class="opp-item">
                         <div class="opp-item-head">
                             <strong><?= htmlspecialchars($op["title"]) ?></strong>
@@ -88,7 +61,7 @@ while ($r = $my_apps_result->fetch_assoc()) {
                         <?php if (isset($applied_ids[$op["id"]])): ?>
                             <p class="applied-note">Application: <span class="badge badge-<?= strtolower($applied_ids[$op["id"]]) ?>"><?= htmlspecialchars(ucfirst($applied_ids[$op["id"]])) ?></span></p>
                         <?php else: ?>
-                            <form method="POST" action="apply.php" class="apply-form">
+                            <form method="POST" action="../../Controllers/ApplicationController.php" class="apply-form">
                                 <input type="hidden" name="opportunity_id" value="<?= $op["id"] ?>">
                                 <div class="field">
                                     <textarea name="message" placeholder="Why would you like to help? (optional)"></textarea>
@@ -97,17 +70,13 @@ while ($r = $my_apps_result->fetch_assoc()) {
                             </form>
                         <?php endif; ?>
                     </div>
-                <?php endwhile; ?>
+                <?php endforeach; ?>
             <?php endif; ?>
         </section>
 
         <section class="dash-card wide">
             <h2>My Applications</h2>
-            <?php
-            $my_apps->execute();
-            $my_apps_result = $my_apps->get_result();
-            if ($my_apps_result->num_rows === 0):
-            ?>
+            <?php if (count($myApps) === 0): ?>
                 <p class="empty-note">You have not applied for any opportunities yet.</p>
             <?php else: ?>
                 <table class="data-table">
@@ -120,14 +89,14 @@ while ($r = $my_apps_result->fetch_assoc()) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php while ($app = $my_apps_result->fetch_assoc()): ?>
+                        <?php foreach ($myApps as $app): ?>
                             <tr>
                                 <td><?= htmlspecialchars($app["title"]) ?></td>
                                 <td><?= htmlspecialchars($app["location"]) ?></td>
                                 <td><?= htmlspecialchars($app["applied_at"]) ?></td>
                                 <td><span class="badge badge-<?= strtolower($app["status"]) ?>"><?= htmlspecialchars(ucfirst($app["status"])) ?></span></td>
                             </tr>
-                        <?php endwhile; ?>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             <?php endif; ?>
@@ -148,7 +117,7 @@ while ($r = $my_apps_result->fetch_assoc()) {
                 var data = new FormData(f);
                 data.append("action", "apply");
 
-                fetch("ajax_handler.php?action=apply", {
+                fetch("../../Controllers/AjaxController.php?action=apply", {
                     method: "POST",
                     body: data
                 })
