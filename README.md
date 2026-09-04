@@ -1,6 +1,6 @@
 # VolCord — Volunteer Coordination Management System
 
-VolCord (VolCoord) is a centralized web platform to organize volunteers, manage activities, and connect people with meaningful community service opportunities.
+VolCord is a centralized web platform to organize volunteers, manage activities, and connect people with meaningful community service opportunities.
 
 Instead of scattered spreadsheets and manual coordination, Volunteers create profiles with skills, Customers (organizations / requesters) post opportunities, and Admins approve opportunities and assign volunteers — all in one place.
 
